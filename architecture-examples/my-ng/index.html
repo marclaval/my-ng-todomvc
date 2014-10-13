@@ -6,7 +6,7 @@
 		<link rel="stylesheet" href="bower_components/todomvc-common/base.css">
 		<!-- CSS overrides - remove if you don't need it -->
 		<link rel="stylesheet" href="css/app.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js" type="text/javascript"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js" type="text/javascript"></script>
 		<script src="js/app.js" type="text/javascript"></script>
 	</head>
 	<body>
@@ -17,39 +17,41 @@
 			</header>
 			<!-- This section should be hidden by default and shown when there are todos -->
 			<section id="main" ng-show="appCtrl.todos.length > 0">
-				<input id="toggle-all" type="checkbox">
+				<input id="toggle-all" type="checkbox" ng-model="appCtrl.allCompleted" ng-change="appCtrl.toggleAll()"/>
 				<label for="toggle-all">Mark all as complete</label>
 				<ul id="todo-list">
 					<!-- These are here just to show the structure of the list items -->
 					<!-- List items should get the class `editing` when editing and `completed` when marked as completed -->
-					<li ng-repeat="todo in appCtrl.todos | todolist:appCtrl.filterMode" ng-class="{completed: !todo.active}">
-						<div class="view">
-							<input class="toggle" type="checkbox" ng-model="todo.active">
-							<label>{{todo.label}}</label>
-							<button class="destroy"></button>
+					<li ng-repeat="todo in appCtrl.todos | todolist:appCtrl.filterMode" ng-class="{completed: todo.completed, editing:todo.editing}"
+					 ng-switch on="todo.editing">
+						<input class="edit" ng-model="todo.label" ng-switch-when="true" ng-blur="appCtrl.stopEdit($event)"
+							ng-keyup="appCtrl.stopEdit($event, $index)" focusonshow/>
+						<div class="view" ng-switch-default>
+							<input class="toggle" type="checkbox" ng-model="todo.completed"/>
+							<label ng-dblclick="appCtrl.editTodo($event, $index)">{{todo.label}}</label>
+							<button class="destroy" ng-click="appCtrl.rmTodo($index)"></button>
 						</div>
-						<input class="edit" ng-model="todo.label">
 					</li>
 				</ul>
 			</section>
 			<!-- This footer should hidden by default and shown when there are todos -->
 			<footer id="footer" ng-show="appCtrl.todos.length > 0">
 				<!-- This should be `0 items left` by default -->
-				<span id="todo-count"><strong>{{appCtrl.getActiveCount()}}</strong> item left</span>
+				<span id="todo-count"><strong>{{appCtrl.getActiveCount()}}</strong> item{{appCtrl.getActiveCount() == 1?"":"s"}} left</span>
 				<!-- Remove this if you don't implement routing -->
 				<ul id="filters">
 					<li>
-						<a class="selected" href="#/" ng-click="appCtrl.setFilter('all')">All</a>
+						<a ng-class="{selected: appCtrl.filterMode === 'all'}" href="#/">All</a>
 					</li>
 					<li>
-						<a href="#/active" ng-click="appCtrl.setFilter('active')">Active</a>
+						<a ng-class="{selected: appCtrl.filterMode === 'active'}" href="#/active">Active</a>
 					</li>
 					<li>
-						<a href="#/completed" ng-click="appCtrl.setFilter('completed')">Completed</a>
+						<a ng-class="{selected: appCtrl.filterMode === 'completed'}" href="#/completed">Completed</a>
 					</li>
 				</ul>
 				<!-- Hidden if no completed items are left ↓ -->
-				<button id="clear-completed">Clear completed ({{appCtrl.todos.length - appCtrl.getActiveCount()}})</button>
+				<button id="clear-completed" ng-show="appCtrl.todos.length > appCtrl.getActiveCount()" ng-click="appCtrl.clearCompleted()">Clear completed ({{appCtrl.todos.length - appCtrl.getActiveCount()}})</button>
 			</footer>
 		</section>
 		<footer id="info">
