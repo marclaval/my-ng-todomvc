@@ -13,7 +13,9 @@ angular.module('controllers.appctrl', ['services.todostorage'])
 
     this.addTodo = function(event) {
         if (event.keyCode === 13  && this.newTodo.length > 0) {
-            this.todos.push({label: this.newTodo.trim(), completed: false, editing: false});
+            if (this.newTodo.trim() !== "") {
+                this.todos.push({label: this.newTodo.trim(), completed: false, editing: false});
+            }
             this.newTodo = "";
         }
     };
@@ -26,7 +28,6 @@ angular.module('controllers.appctrl', ['services.todostorage'])
         this.stopEdit(null);
         this.previousValue = this.todos[index].label;
         this.todos[index].editing = true;
-        event.target.focus();
     };
 
     this.stopEdit = function(event, index) {
@@ -38,7 +39,7 @@ angular.module('controllers.appctrl', ['services.todostorage'])
                     todo.label = todo.label.trim();
                     todo.editing = false;
                 }
-                if (todo.label == "") {
+                if (todo.label === "") {
                     this.todos.splice(idx, 1);
                 }
             }

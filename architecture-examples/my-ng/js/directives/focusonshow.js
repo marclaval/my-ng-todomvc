@@ -1,12 +1,12 @@
 angular.module('directives.focusonshow', [])
 
-.directive("focusonshow", function(){
+.directive("focusonshow", function($timeout){
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
-            setTimeout(function() {
+            $timeout(function() {
                 element[0].focus();
-            }, 0);
+            }, 0, false);
         }
     };
 });
