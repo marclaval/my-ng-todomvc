@@ -1,21 +1,26 @@
 describe('AppCtrl', function() {
 
-    var scope;
+    var scope, $httpBackend;
     var ctrl;
     var todoStorage = {
         storage: {},
-        get: function () {
-            return this.storage;
+        get: function (cb) {
+            cb(this.storage);
         },
-        put: function (value) {
+        set: function (value) {
             this.storage = value;
         }
     };
 
     beforeEach(module('controllers.appctrl'));
-    beforeEach(inject(function ($rootScope, $controller, $browser) {
+    beforeEach(inject(function ($rootScope, $controller, $browser, _$httpBackend_) {
         scope = $rootScope.$new();
         ctrl = $controller('AppCtrl', {$scope: scope});
+        $httpBackend = _$httpBackend_;
+
+        $httpBackend
+            .whenGET('https://api.mongolab.com/api/1/databases/js-xperiment/collections/todomvc?apiKey=rgwHsILbUV1v5nfrtVTuqlooPcYAV-_h')
+            .respond([]);
     }));
 
     it('should initialize properly', function() {
@@ -95,7 +100,7 @@ describe('AppCtrl', function() {
                     'completed': true
                 }];
 
-            todoStorage.storage = todoList;
+            todoStorage.set(todoList);
             ctrl = $controller('AppCtrl', {
                 $scope: scope,
                 todoStorage: todoStorage

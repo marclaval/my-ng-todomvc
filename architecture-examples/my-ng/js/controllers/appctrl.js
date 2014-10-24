@@ -3,13 +3,12 @@ angular.module('controllers.appctrl', ['services.todostorage'])
 .controller("AppCtrl", function ($scope, $rootScope, $location, todoStorage) {
     'use strict';
 
-    this.todos = todoStorage.get();
+    this.todos = [];
+    todoStorage.get(angular.bind(this, function(data) {
+        this.todos = data;
+    }));
     this.newTodo = "";
     this.allCompleted = false;
-
-    $rootScope.$watch(angular.bind(this, function() {
-        todoStorage.set(this.todos);
-    }));
 
     this.addTodo = function(event) {
         if (event.keyCode === 13  && this.newTodo.length > 0) {
@@ -38,6 +37,7 @@ angular.module('controllers.appctrl', ['services.todostorage'])
                 if (todo.editing) {
                     todo.label = todo.label.trim();
                     todo.editing = false;
+                    todoStorage.set(this.todos);
                 }
                 if (todo.label === "") {
                     this.todos.splice(idx, 1);
@@ -75,6 +75,7 @@ angular.module('controllers.appctrl', ['services.todostorage'])
                 this.todos.splice(index, 1);
             }
         }
+        todoStorage.set(this.todos);
     };
 
     this._setFilterFromPath = function(rawPath) {
@@ -87,6 +88,7 @@ angular.module('controllers.appctrl', ['services.todostorage'])
         return this.getActiveCount();
     }), angular.bind(this, function (newVal, oldVal) {
         this.allCompleted = newVal === 0;
+        todoStorage.set(this.todos);
     }));
 
     $scope.$watch(function () {
