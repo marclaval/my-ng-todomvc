@@ -97,4 +97,39 @@ angular.module('controllers.appctrl', ['services.todostorage'])
         this._setFilterFromPath(newPath);
     }));
 
+})
+
+.animation('.animated-button', function() {
+  return {
+    enter: function(element, done) {
+      //run the animation here and call done when the animation is complete
+      console.log("animated-button entering dom");
+      done();
+      return function(cancelled) {
+        //this (optional) function will be called when the animation
+        //completes or when the animation is cancelled (the cancelled
+        //flag will be set to true if cancelled).
+      };
+    },
+    leave: function(element, done) {
+        console.log("animated-button leaving dom");
+        done();
+    },
+    move: function(element, done) {
+        console.log("animated-button moving in dom");
+        done();
+    },
+    /*
+    //animation that can be triggered before the class is added
+    beforeAddClass: function(element, className, done) { },
+
+    //animation that can be triggered after the class is added
+    addClass: function(element, className, done) { },
+
+    //animation that can be triggered before the class is removed
+    beforeRemoveClass: function(element, className, done) { },
+
+    //animation that can be triggered after the class is removed
+    removeClass: function(element, className, done) { }*/
+  };
 });

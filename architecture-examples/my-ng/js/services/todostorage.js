@@ -9,7 +9,6 @@ angular.module('services.todostorage', [])
 
     return {
         get: function (cb) {
-            cb(angular.fromJson(localStorage.getItem(STORAGE_ID)) || []);
             var _this = this;
             this.remoteGet(function(data){
                 if (data && data.length === 0) {
@@ -20,6 +19,9 @@ angular.module('services.todostorage', [])
                 else {
                     _this._storeIdAndData(data[0], cb);
                 }
+            },
+            function() {
+                cb(angular.fromJson(localStorage.getItem(STORAGE_ID)) || []);
             });
         },
 
@@ -43,7 +45,7 @@ angular.module('services.todostorage', [])
             }
         },
 
-        remoteGet: function(cb) {
+        remoteGet: function(cb, cb2) {
             $http.get('https://api.mongolab.com/api/1/databases/js-xperiment/collections/todomvc', {
                 params:{
                     apiKey:'rgwHsILbUV1v5nfrtVTuqlooPcYAV-_h'
@@ -53,6 +55,7 @@ angular.module('services.todostorage', [])
                 cb(data);
             })
             .error(function (data, status, headers, config) {
+                cb2();
                 console.log('Something went wrong in remoteGet...');
             });
         },
