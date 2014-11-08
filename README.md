@@ -1,4 +1,4 @@
 my-ng-todomvc
 =============
 
-Todomvc
+Todomvc implementation to learn
